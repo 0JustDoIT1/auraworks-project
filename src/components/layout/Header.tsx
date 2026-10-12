@@ -18,7 +18,7 @@ export default function Header() {
         {/* 로고 */}
         <Link
           href="/"
-          className="text-2xl font-extrabold tracking-tight text-primary"
+          className="text-2xl font-bold tracking-tight text-primary"
         >
           HIDDEN KICE
         </Link>
@@ -33,7 +33,7 @@ export default function Header() {
               key={label}
               type="button"
               aria-label={count ? `${label} ${count}개` : label}
-              className="relative transition-colors hover:text-primary"
+              className="relative cursor-pointer transition-colors hover:text-primary"
             >
               <Icon size={24} strokeWidth={1.75} />
               {count ? (

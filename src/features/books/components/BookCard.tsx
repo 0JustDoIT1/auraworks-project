@@ -16,7 +16,7 @@ export default function BookCard({ book }: BookCardProps) {
   const finalPrice = Math.round((price * (100 - discountRate)) / 100);
 
   return (
-    <article className="group">
+    <article className="group cursor-pointer">
       {/* 썸네일 */}
       <div className="relative aspect-[4/5] overflow-hidden rounded border border-gray-200 bg-white">
         {thumbnailUrl ? (

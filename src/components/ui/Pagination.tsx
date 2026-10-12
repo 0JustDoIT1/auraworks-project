@@ -19,7 +19,7 @@ function getPageNumbers(current: number, total: number) {
 }
 
 const BASE_BUTTON =
-  "flex size-7 items-center justify-center rounded border text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40";
+  "flex size-7 cursor-pointer items-center justify-center rounded border text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40";
 
 export default function Pagination({
   currentPage,
