@@ -1,8 +1,8 @@
 "use client";
 
-import { SubmitEvent, useState } from "react";
-import { BookFilter } from "../types/books";
+import { useState, type SubmitEvent } from "react";
 import { Search, X } from "lucide-react";
+import type { BookFilter } from "../types/books";
 
 type BookToolbarProps = {
   keyword: string;
@@ -25,6 +25,13 @@ export default function BookToolbar({
 }: BookToolbarProps) {
   const [searchKey, setSearchKey] = useState<string>(keyword);
 
+  // 입력 즉시 검색
+  const handleChange = (value: string) => {
+    setSearchKey(value);
+    onSearch(value.trim());
+  };
+
+  // Enter로도 검색
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSearch(searchKey.trim());
@@ -46,7 +53,7 @@ export default function BookToolbar({
         <input
           type="search"
           value={searchKey}
-          onChange={(e) => setSearchKey(e.target.value)}
+          onChange={(e) => handleChange(e.target.value)}
           placeholder="검색"
           aria-label="교재 검색"
           className="h-9 w-full rounded-md border border-gray-300 pl-9 pr-8 text-sm outline-none transition-colors placeholder:text-gray-400 focus:border-primary [&::-webkit-search-cancel-button]:hidden"
@@ -56,7 +63,7 @@ export default function BookToolbar({
             type="button"
             aria-label="검색어 지우기"
             onClick={handleClear}
-            className="absolute right-2.5 top-1/2 cursor-pointer -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
           >
             <X size={16} />
           </button>
@@ -75,8 +82,8 @@ export default function BookToolbar({
                 onClick={() => onFilter(value)}
                 className={
                   isActive
-                    ? "cursor-pointer font-semibold text-gray-900"
-                    : "cursor-pointer text-gray-400 hover:text-gray-700"
+                    ? "font-semibold text-gray-900"
+                    : "text-gray-400 hover:text-gray-700"
                 }
               >
                 {label}
