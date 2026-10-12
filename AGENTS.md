@@ -23,7 +23,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - feature 간 연결은 app에서 조합 (예: `app/_components/StoreBookList.tsx`가 books와 cart를 연결)
 - 공통 layout이 feature를 써야 하면 props(slot)로 주입 (예: `Header`의 `cartSlot`에 `layout.tsx`가 `CartButton` 전달)
 - 도메인 단위: `src/features/<domain>/`
-  - `components/`, `hooks/`, `api/`(Supabase 호출), `types/<domain>.ts`, `constants/`(가격 계산·스토어 등)
+  - 파일은 루트에 두지 않고 역할별 폴더에 둠
+    - `api/`: Supabase 호출
+    - `components/`: UI
+    - `hooks/`: `useXxx.ts`
+    - `store/`: 상태와 동작을 가진 스토어
+    - `types/`: 타입 (`types/<domain>.ts`)
+    - `utils/`: 상태 없는 순수 함수 (계산·변환)
+    - `constants/`: 값만 있는 상수 (필요할 때만 생성)
   - 현재 도메인: `books`(교재 목록·상세), `cart`(장바구니)
 - 공통: `src/components/layout`, `src/components/ui`
 - 외부 클라이언트·유틸: `src/lib/` (Supabase 클라이언트는 `src/lib/supabase/client.ts` 한 곳에서만 생성)
@@ -34,7 +41,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - 교재 데이터는 CSR로 조회: `api/books.ts` → `hooks/useBooks.ts` → 컴포넌트
 - Supabase 호출은 `features/*/api/`에서만. 컴포넌트에서 직접 호출 금지
 - hook은 data / isLoading / error 상태를 반환하고, 화면은 로딩·에러·빈 상태를 모두 처리
-- 장바구니는 로그인 없이 localStorage에 저장: `cart/constants/store.ts`(`useSyncExternalStore`용 스토어) → `hooks/useCart.ts`
+- 장바구니는 로그인 없이 localStorage에 저장: `cart/store/cartStore.ts`(`useSyncExternalStore`용 스토어) → `hooks/useCart.ts`
 - 데이터가 필요 없는 컴포넌트는 Server Component 유지
 
 ## Supabase

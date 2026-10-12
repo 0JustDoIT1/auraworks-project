@@ -5,7 +5,7 @@ import BookList from "@/features/books/components/BookList";
 import { BOOK_TYPE_LABEL, type Book } from "@/features/books/types/books";
 import { useCart } from "@/features/cart/hooks/useCart";
 import { AddResult } from "@/features/cart/types/cart";
-import { getBookPrice } from "@/features/books/constants/pricing";
+import { getBookPrice } from "@/features/books/utils/pricing";
 
 const ADD_TOAST: Record<AddResult, () => void> = {
   added: () => toast.success("장바구니에 담았습니다."),

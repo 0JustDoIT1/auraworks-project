@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import Dialog from "@/components/ui/Dialog";
 import { BOOK_TYPE_LABEL, type Book } from "../types/books";
-import { getBookPrice } from "../constants/pricing";
+import { getBookPrice } from "../utils/pricing";
 import { formatPrice } from "@/lib/utils/format";
 
 type BookDetailModalProps = {

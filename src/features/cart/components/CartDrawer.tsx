@@ -5,7 +5,7 @@ import { Minus, Plus, ShoppingCart, X } from "lucide-react";
 import Dialog from "@/components/ui/Dialog";
 import { useCart } from "../hooks/useCart";
 import { formatPrice } from "@/lib/utils/format";
-import { MAX_QUANTITY } from "../constants/store";
+import { MAX_QUANTITY } from "../store/cartStore";
 
 type CartDrawerProps = {
   open: boolean;

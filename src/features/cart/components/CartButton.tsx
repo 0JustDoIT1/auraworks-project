@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "../hooks/useCart";
-import CountBadge from "@/components/ui/Badge";
+import CountBadge from "@/components/ui/CountBadge";
 import CartDrawer from "./CartDrawer";
 
 export default function CartButton() {
