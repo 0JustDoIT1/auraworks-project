@@ -18,14 +18,14 @@ export default function BookCard({ book }: BookCardProps) {
   return (
     <article className="group">
       {/* 썸네일 */}
-      <div className="relative aspect-square overflow-hidden rounded-md border border-gray-200 bg-white">
+      <div className="relative aspect-[4/5] overflow-hidden rounded border border-gray-200 bg-white">
         {thumbnailUrl ? (
           <Image
             src={thumbnailUrl}
             alt={title}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-            className="object-contain p-[10%] transition-transform duration-300 group-hover:scale-105"
+            className="object-contain p-[6%] transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-gray-400">
@@ -39,7 +39,7 @@ export default function BookCard({ book }: BookCardProps) {
         <span className="text-md font-bold text-gray-400">
           {BOOK_TYPE_LABEL[type]}
         </span>
-        <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 md:text-base">
+        <h3 className="line-clamp-2 text-sm font-medium text-gray-900 md:text-base">
           {title}
         </h3>
 

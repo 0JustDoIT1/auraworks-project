@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "히든카이스 스토어",
@@ -14,9 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="antialiased">
+      <body className="flex min-h-dvh flex-col antialiased">
         <Header />
-        <main>{children}</main>
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

@@ -3,7 +3,7 @@ import type { Book } from "./types";
 
 const random = createSeededRandom(2026);
 
-export const SAMPLE_BOOKS: Book[] = Array.from({ length: 12 }, (_, i) => {
+export const SAMPLE_BOOKS: Book[] = Array.from({ length: 30 }, (_, i) => {
   const isPass = random() < 0.5;
 
   return {
@@ -14,6 +14,6 @@ export const SAMPLE_BOOKS: Book[] = Array.from({ length: 12 }, (_, i) => {
     salePercent: isPass ? 5 : null,
     thumbnailUrl: isPass
       ? "/images/hidden_set.png"
-      : "/images/hidden_single.jpg",
+      : "/images/hidden_single.png",
   };
 });
