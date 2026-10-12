@@ -1,11 +1,11 @@
 import HeroBanner from "./_components/HeroBanner";
-import BookList from "@/features/books/components/BookList";
+import StoreBookList from "./_components/StoreBookList";
 
 export default function Home() {
   return (
     <>
       <HeroBanner />
-      <BookList />
+      <StoreBookList />
     </>
   );
 }

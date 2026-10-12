@@ -63,7 +63,7 @@ export default function BookToolbar({
             type="button"
             aria-label="검색어 지우기"
             onClick={handleClear}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-700"
           >
             <X size={16} />
           </button>
@@ -82,8 +82,8 @@ export default function BookToolbar({
                 onClick={() => onFilter(value)}
                 className={
                   isActive
-                    ? "font-semibold text-gray-900"
-                    : "text-gray-400 hover:text-gray-700"
+                    ? "cursor-pointer font-semibold text-gray-900"
+                    : "cursor-pointer text-gray-400 hover:text-gray-700"
                 }
               >
                 {label}

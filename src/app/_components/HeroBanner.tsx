@@ -20,7 +20,7 @@ const AUTO_PLAY_MS = 5000;
 
 // md 이상: 비율 유지한 채 가운데로 축소, 경계는 마스크로 배경과 자연스럽게 연결
 const IMAGE_BOX_CLASS =
-  "absolute inset-0 md:inset-[9%] md:mask-x-from-95% md:mask-y-from-95%";
+  "absolute inset-0 md:inset-[9%] md:mask-x-from-95% md:mask-y-from-85%";
 
 // 임시 캐러셀 데이터: 실제 배너 이미지로 교체
 const SLIDES: Slide[] = [

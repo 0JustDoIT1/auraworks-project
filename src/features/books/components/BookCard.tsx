@@ -1,22 +1,29 @@
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils/format";
-import { BOOK_TYPE_LABEL, Book } from "../types/books";
+import { BOOK_TYPE_LABEL, type Book } from "../types/books";
+import { getBookPrice } from "../constants/pricing";
 
 type BookCardProps = {
   book: Book;
+  onSelect?: (book: Book) => void;
 };
 
-export default function BookCard({ book }: BookCardProps) {
-  const { title, type, price, salePercent, thumbnailUrl } = book;
-  const discountRate =
-    salePercent !== null && salePercent > 0 && salePercent < 100
-      ? salePercent
-      : 0;
-  const hasDiscount = discountRate > 0;
-  const finalPrice = Math.round((price * (100 - discountRate)) / 100);
+export default function BookCard({ book, onSelect }: BookCardProps) {
+  const { title, type, price, thumbnailUrl } = book;
+  const { finalPrice, discountRate, hasDiscount } = getBookPrice(book);
 
   return (
-    <article className="group cursor-pointer">
+    <article className="group relative">
+      {/* 카드 전체를 덮는 클릭 영역 (article 안에 h3 등이 있어 button으로 감싸지 않음) */}
+      {onSelect ? (
+        <button
+          type="button"
+          aria-label={`${title} 상세 보기`}
+          onClick={() => onSelect(book)}
+          className="absolute inset-0 z-10 cursor-pointer rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        />
+      ) : null}
+
       {/* 썸네일 */}
       <div className="relative aspect-[4/5] overflow-hidden rounded border border-gray-200 bg-white">
         {thumbnailUrl ? (
@@ -36,7 +43,7 @@ export default function BookCard({ book }: BookCardProps) {
 
       {/* 정보 */}
       <div className="mt-3 flex flex-col gap-1">
-        <span className="text-md font-bold text-gray-400">
+        <span className="text-base font-bold text-gray-400">
           {BOOK_TYPE_LABEL[type]}
         </span>
         <h3 className="line-clamp-2 text-sm font-medium text-gray-900 md:text-base">
