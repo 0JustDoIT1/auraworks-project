@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { formatPrice } from "@/lib/format";
-import { BOOK_TYPE_LABEL, Book } from "../types";
+import { formatPrice } from "@/lib/utils/format";
+import { BOOK_TYPE_LABEL, Book } from "../types/books";
 
 type BookCardProps = {
   book: Book;

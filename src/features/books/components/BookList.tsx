@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Pagination from "@/components/ui/Pagination";
 import { useBooks } from "../hooks/useBooks";
-import type { BookFilter } from "../types";
+import type { BookFilter } from "../types/books";
 import BookGrid from "./BookGrid";
 import BookToolbar from "./BookToolbar";
 

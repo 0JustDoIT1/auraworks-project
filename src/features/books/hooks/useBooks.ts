@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { BookListResult, BookQuery } from "../types";
+import { BookListResult, BookQuery } from "../types/books";
 import { fetchBooks } from "../api/books";
 
 type FetchState = {

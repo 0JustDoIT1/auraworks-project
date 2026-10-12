@@ -1,7 +1,7 @@
 "use client";
 
 import { SubmitEvent, useState } from "react";
-import { BookFilter } from "../types";
+import { BookFilter } from "../types/books";
 import { Search, X } from "lucide-react";
 
 type BookToolbarProps = {

@@ -27,3 +27,13 @@ export type BookListResult = {
   books: Book[];
   totalCount: number;
 };
+
+// DB (books 테이블) 컬럼 타입
+export type BookRow = {
+  id: number;
+  title: string;
+  type: BookType;
+  price: number;
+  sale_percent: number | null;
+  thumbnail_url: string | null;
+};
