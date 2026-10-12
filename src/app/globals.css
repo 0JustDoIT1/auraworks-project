@@ -9,10 +9,10 @@
   --color-accent: #ff6a2b;
 }
 
-/* 페이지 공통 컨테이너: 화면 폭의 약 5.5%를 좌우 여백으로 사용 */
+/* 페이지 공통 컨테이너: 콘텐츠 최대 1400px, 좌우 여백 16px */
 @utility container-page {
   width: 100%;
-  max-width: 1920px;
+  max-width: calc(1400px + 2rem); /* 콘텐츠 1400px + 좌우 여백 */
   margin-inline: auto;
-  padding-inline: max(1rem, 5.5vw);
+  padding-inline: 1rem;
 }

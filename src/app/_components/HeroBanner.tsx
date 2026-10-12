@@ -5,90 +5,39 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import {
-  ArrowRight,
-  ChartColumnIncreasing,
-  Crosshair,
-  Trophy,
-  type LucideIcon,
-} from "lucide-react";
 
-type Feature = {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-};
+// 이미지 기준 % 좌표 (이미지맵 영역)
+type Area = { left: number; top: number; width: number; height: number };
 
 type Slide = {
   id: number;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  cta: { label: string; href: string };
-  backgroundImage?: string; // 없으면 단색 배경
+  image: string;
+  alt: string;
+  link?: { href: string; label: string; area: Area }; // 이미지 속 버튼 위치에만 클릭 영역
 };
 
 const AUTO_PLAY_MS = 5000;
 
-// 아이콘 데이터
-const FEATURES: Feature[] = [
-  {
-    icon: Crosshair,
-    title: "실전 적중",
-    description: "출제 경향을 꿰뚫는 문제",
-  },
-  {
-    icon: ChartColumnIncreasing,
-    title: "난이도별 구성",
-    description: "단계별로 완성하는 실력",
-  },
-  { icon: Trophy, title: "검증된 결과", description: "합격생이 증명한 선택" },
-];
+// md 이상: 비율 유지한 채 가운데로 축소, 경계는 마스크로 배경과 자연스럽게 연결
+const IMAGE_BOX_CLASS =
+  "absolute inset-0 md:inset-[9%] md:mask-x-from-95% md:mask-y-from-95%";
 
-// 임시 캐러셀 데이터
+// 임시 캐러셀 데이터: 실제 배너 이미지로 교체
 const SLIDES: Slide[] = [
   {
     id: 1,
-    eyebrow: "HIDDEN KICE",
-    title: "히든카이스",
-    subtitle: "모두가 푸는 건 이유가 있습니다",
-    description: "상위권이 선택한 문제집, 결과로 증명된 실전 대비서",
-    cta: { label: "히든카이스 시리즈 보기", href: "#" },
-    backgroundImage: "/images/carousel_1.png",
+    image: "/images/carousel_1.png",
+    alt: "히든카이스 시리즈",
+    link: {
+      href: "#",
+      label: "히든카이스 시리즈 보기",
+      area: { left: 5.69, top: 78.57, width: 16.57, height: 9.34 },
+    },
   },
-  {
-    id: 2,
-    eyebrow: "2026 SEASON 7",
-    title: "시즌7 출시",
-    subtitle: "실전과 가장 닮은 모의고사",
-    description: "최신 출제 경향을 반영한 2026 시즌 라인업",
-    cta: { label: "시즌7 보러가기", href: "#" },
-  },
-  {
-    id: 3,
-    eyebrow: "AI OMR WORK",
-    title: "AI 채점 분석",
-    subtitle: "풀고 나면 약점이 보입니다",
-    description: "OMR 한 장으로 확인하는 나의 취약 단원",
-    cta: { label: "AI OMR WORK 알아보기", href: "#" },
-  },
-  {
-    id: 4,
-    eyebrow: "CHALLENGE",
-    title: "히든 챌린지",
-    subtitle: "함께 풀면 끝까지 갑니다",
-    description: "매주 정해진 분량으로 완주하는 학습 챌린지",
-    cta: { label: "챌린지 참여하기", href: "#" },
-  },
-  {
-    id: 5,
-    eyebrow: "SET PACKAGE",
-    title: "세트 할인",
-    subtitle: "한 번에 준비하는 실전 대비",
-    description: "시리즈 세트 구매 시 할인 혜택",
-    cta: { label: "세트 상품 보기", href: "#" },
-  },
+  { id: 2, image: "/images/carousel_1.png", alt: "시즌7 출시" },
+  { id: 3, image: "/images/carousel_1.png", alt: "AI 채점 분석" },
+  { id: 4, image: "/images/carousel_1.png", alt: "히든 챌린지" },
+  { id: 5, image: "/images/carousel_1.png", alt: "세트 할인" },
 ];
 
 export default function HeroBanner() {
@@ -121,79 +70,47 @@ export default function HeroBanner() {
     >
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex">
-          {SLIDES.map((slide, index) => (
-            <div
-              key={slide.id}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${index + 1} / ${total}`}
-              inert={index !== selectedIndex}
-              className="relative flex min-h-[440px] min-w-0 shrink-0 grow-0 basis-full md:aspect-[3/1] md:min-h-[400px]"
-            >
-              {/* 배경 이미지 */}
-              {slide.backgroundImage ? (
-                <Image
-                  src={slide.backgroundImage}
-                  alt=""
-                  fill
-                  sizes="100vw"
-                  className="object-cover object-right"
-                  priority={index === 0}
-                />
-              ) : null}
+          {SLIDES.map((slide, index) => {
+            const image = (
+              <Image
+                src={slide.image}
+                alt={slide.alt}
+                fill
+                sizes="100vw"
+                className="object-cover"
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
+              />
+            );
 
-              {/* 텍스트 가독성용 좌측 그라데이션 */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent" />
-
-              {/* 좌측 텍스트 */}
-              <div className="container-page relative flex flex-col justify-center py-12">
-                <p className="flex items-center gap-3 text-[clamp(0.875rem,1.2vw,1.375rem)] font-medium tracking-[0.25em] text-accent">
-                  {slide.eyebrow}
-                  <span className="h-px w-[1.2em] bg-accent" />
-                </p>
-
-                <h2 className="mt-[0.4em] text-[clamp(2.75rem,4vw,4.5rem)] font-bold leading-tight">
-                  {slide.title}
-                </h2>
-                <p className="text-[clamp(1.5rem,2.6vw,3rem)] font-light leading-tight">
-                  {slide.subtitle}
-                </p>
-                <p className="mt-[0.8em] text-[clamp(1rem,1.2vw,1.375rem)] text-white/75">
-                  {slide.description}
-                </p>
-
-                <ul className="mt-[clamp(1.5rem,2.6vw,3rem)] hidden divide-x divide-white/25 sm:flex">
-                  {FEATURES.map(({ icon: Icon, title, description }) => (
-                    <li
-                      key={title}
-                      className="flex items-center gap-3 px-[clamp(1rem,1.4vw,1.5rem)] first:pl-0"
-                    >
-                      <Icon
-                        strokeWidth={1.5}
-                        className="size-[clamp(1.75rem,2.2vw,2.5rem)] shrink-0 text-accent"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-[clamp(0.875rem,0.95vw,1.0625rem)] font-semibold text-accent">
-                          {title}
-                        </span>
-                        <span className="text-[clamp(0.75rem,0.8vw,0.9375rem)] text-white/85">
-                          {description}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={slide.cta.href}
-                  className="mt-[clamp(1.5rem,2.6vw,3rem)] inline-flex w-fit items-center gap-[2.5em] rounded-md border border-accent/80 px-[2em] py-[1em] text-[clamp(0.875rem,0.95vw,1.0625rem)] text-accent transition-colors hover:bg-accent hover:text-white"
-                >
-                  {slide.cta.label}
-                  <ArrowRight className="size-[1.2em]" />
-                </Link>
+            return (
+              <div
+                key={slide.id}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${index + 1} / ${total}`}
+                inert={index !== selectedIndex}
+                className="relative aspect-[3/1] min-w-0 shrink-0 grow-0 basis-full"
+              >
+                <div className={IMAGE_BOX_CLASS}>
+                  {image}
+                  {slide.link ? (
+                    <Link
+                      href={slide.link.href}
+                      aria-label={slide.link.label}
+                      className="absolute rounded-md focus-visible:outline-2 focus-visible:outline-accent"
+                      style={{
+                        left: `${slide.link.area.left}%`,
+                        top: `${slide.link.area.top}%`,
+                        width: `${slide.link.area.width}%`,
+                        height: `${slide.link.area.height}%`,
+                      }}
+                    />
+                  ) : null}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
