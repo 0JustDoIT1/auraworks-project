@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartButton from "@/features/cart/components/CartButton";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "히든카이스 스토어",
@@ -20,6 +21,12 @@ export default function RootLayout({
         <Header cartSlot={<CartButton />} />
         <main className="flex-1">{children}</main>
         <Footer />
+        <Toaster
+          position="bottom-center"
+          richColors
+          duration={2500}
+          toastOptions={{ classNames: { toast: "font-sans" } }}
+        />
       </body>
     </html>
   );

@@ -1,8 +1,7 @@
 // 로그인이 없으므로 브라우저(localStorage)에 저장.
 
-import { CartItem, CartItemInput } from "../types/cart";
+import type { AddResult, CartItem, CartItemInput } from "../types/cart";
 
-// 사용자 기능이 생기면 이 파일의 저장/불러오기만 서버 API로 교체
 const STORAGE_KEY = "hidden-kice-cart";
 const MAX_QUANTITY = 99;
 const EMPTY: CartItem[] = [];
@@ -96,22 +95,29 @@ export const cartStore = {
     return EMPTY;
   },
 
-  add(input: CartItemInput, quantity = 1) {
+  // 결과를 돌려줘서 호출한 쪽이 상황별 메시지를 보여줄 수 있게 함
+  add(input: CartItemInput, quantity = 1): AddResult {
     const current = cartStore.getSnapshot();
-    const exists = current.some((item) => item.id === input.id);
+    const existing = current.find((item) => item.id === input.id);
+
+    if (!existing) {
+      setItems([...current, { ...input, quantity: clampQuantity(quantity) }]);
+      return "added";
+    }
+    if (existing.quantity >= MAX_QUANTITY) return "max";
+
     setItems(
-      exists
-        ? current.map((item) =>
-            item.id === input.id
-              ? {
-                  ...item,
-                  ...input,
-                  quantity: clampQuantity(item.quantity + quantity),
-                }
-              : item,
-          )
-        : [...current, { ...input, quantity: clampQuantity(quantity) }],
+      current.map((item) =>
+        item.id === input.id
+          ? {
+              ...item,
+              ...input,
+              quantity: clampQuantity(item.quantity + quantity),
+            }
+          : item,
+      ),
     );
+    return "increased";
   },
 
   updateQuantity(id: number, quantity: number) {

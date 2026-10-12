@@ -10,3 +10,6 @@ export type CartItem = {
 };
 
 export type CartItemInput = Omit<CartItem, "quantity">;
+
+// added: 새로 담김 / increased: 이미 있어 수량 증가 / max: 최대 수량이라 변화 없음
+export type AddResult = "added" | "increased" | "max";
