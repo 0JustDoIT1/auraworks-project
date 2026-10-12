@@ -99,7 +99,7 @@ export default function HeroBanner() {
       stopOnMouseEnter: true, // hover 시 일시정지
     }),
   ]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0); // 슬라이드 번호 체크용 state
   const total = SLIDES.length;
 
   // Embla의 select 이벤트로 현재 인덱스 동기화
@@ -107,6 +107,7 @@ export default function HeroBanner() {
     if (!emblaApi) return;
     const handleSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
     emblaApi.on("select", handleSelect);
+
     return () => {
       emblaApi.off("select", handleSelect);
     };
