@@ -1,8 +1,18 @@
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 @import "tailwindcss";
 
+@theme inline {
+  --font-sans: var(--font-pretendard), system-ui, sans-serif;
+}
+
 @theme {
-  --font-sans: "Pretendard", system-ui, sans-serif;
   --color-primary: #7a6cf0;
   --color-accent: #ff6a2b;
+}
+
+/* 페이지 공통 컨테이너: 화면 폭의 약 5.5%를 좌우 여백으로 사용 */
+@utility container-page {
+  width: 100%;
+  max-width: 1920px;
+  margin-inline: auto;
+  padding-inline: max(1rem, 5.5vw);
 }
