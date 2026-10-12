@@ -3,14 +3,18 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 
 export const metadata: Metadata = {
-  title: "히든카이스",
+  title: "히든카이스 스토어",
   description: "HIDDEN KICE - 최고의 문제집",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="ko" className="h-full antialiased">
-      <body>
+    <html lang="ko">
+      <body className="antialiased">
         <Header />
         <main>{children}</main>
       </body>
