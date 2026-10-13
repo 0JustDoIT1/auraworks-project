@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartButton from "@/features/cart/components/CartButton";
 import { Toaster } from "sonner";
+import NoticeButton from "@/features/notices/components/NoticeButton";
 
 const pretendard = localFont({
   src: "../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
@@ -26,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body className="flex min-h-dvh flex-col antialiased">
-        <Header cartSlot={<CartButton />} />
+        <Header cartSlot={<CartButton />} noticeSlot={<NoticeButton />} />
         <main className="flex-1">{children}</main>
         <Footer />
         <Toaster

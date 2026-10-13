@@ -1,21 +1,19 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Bell, User, type LucideIcon } from "lucide-react";
+import { User, type LucideIcon } from "lucide-react";
 import HeaderNav from "./HeaderNav";
 
 type IconAction = { label: string; icon: LucideIcon };
 
 type HeaderProps = {
-  cartSlot?: ReactNode; // 장바구니 버튼은 app/layout에서 주입 (layout → feature 의존 방지)
+  cartSlot?: ReactNode;
+  noticeSlot?: ReactNode;
 };
 
 // 기능 미구현: 아이콘만 표시
-const ICON_ACTIONS: IconAction[] = [
-  { label: "알림", icon: Bell },
-  { label: "마이페이지", icon: User },
-];
+const ICON_ACTIONS: IconAction[] = [{ label: "마이페이지", icon: User }];
 
-export default function Header({ cartSlot }: HeaderProps) {
+export default function Header({ cartSlot, noticeSlot }: HeaderProps) {
   return (
     <header className="border-b border-gray-100 bg-white">
       <div className="container-page flex h-20 items-center">
@@ -33,6 +31,7 @@ export default function Header({ cartSlot }: HeaderProps) {
         {/* 아이콘 */}
         <div className="ml-auto flex items-center gap-6 text-gray-700">
           {cartSlot}
+          {noticeSlot} {/* ④ 추가 */}
           {ICON_ACTIONS.map(({ label, icon: Icon }) => (
             <button
               key={label}
