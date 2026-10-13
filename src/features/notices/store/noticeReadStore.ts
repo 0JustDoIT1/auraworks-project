@@ -5,27 +5,46 @@ let readIds: number[] = [];
 let isLoaded = false;
 const listeners = new Set<() => void>();
 
+function notify() {
+  listeners.forEach((listener) => listener());
+}
+
 function save() {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(readIds));
   } catch {
     // 저장 실패(시크릿 모드 등)해도 화면 상태는 유지
   }
-  listeners.forEach((listener) => listener());
+  notify();
+}
+
+// 다른 탭에서 읽음 처리한 경우 반영
+function handleStorage(event: StorageEvent) {
+  if (event.key !== STORAGE_KEY) return;
+  isLoaded = false; // 다음 getSnapshot에서 localStorage를 다시 읽음
+  notify();
 }
 
 export const noticeReadStore = {
   subscribe(listener: () => void) {
+    if (listeners.size === 0) window.addEventListener("storage", handleStorage);
     listeners.add(listener);
     return () => {
       listeners.delete(listener);
+      if (listeners.size === 0)
+        window.removeEventListener("storage", handleStorage);
     };
   },
 
   getSnapshot() {
     if (!isLoaded) {
       try {
-        readIds = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "[]");
+        const parsed: unknown = JSON.parse(
+          window.localStorage.getItem(STORAGE_KEY) ?? "[]",
+        );
+        readIds = Array.isArray(parsed)
+          ? parsed.filter((id): id is number => Number.isInteger(id))
+          : []; // 배열이 아니거나 숫자가 아닌 항목은 무시
       } catch {
         readIds = [];
       }
@@ -38,13 +57,14 @@ export const noticeReadStore = {
   getServerSnapshot: () => null,
 
   markRead(id: number) {
-    if (readIds.includes(id)) return;
-    readIds = [...readIds, id];
+    const current = noticeReadStore.getSnapshot();
+    if (current.includes(id)) return;
+    readIds = [...current, id];
     save();
   },
 
   markAllRead(ids: number[]) {
-    readIds = [...new Set([...readIds, ...ids])];
+    readIds = [...new Set([...noticeReadStore.getSnapshot(), ...ids])];
     save();
   },
 };

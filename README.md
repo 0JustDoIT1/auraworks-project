@@ -127,7 +127,23 @@
   - 키보드 이동 시 해당 위치에 포커스 테두리 표시
 - 보이지 않는 슬라이드는 `inert` 처리 → 키보드 포커스 진입 방지
 
-### 7. 레이아웃 · 스타일
+### 7. 공지 알림
+
+- 로그인이 없어 사용자별 알림 대신 **모든 사용자 공통 공지**를 Supabase `notices` 테이블에서 CSR로 조회
+- 교재 목록과 같은 흐름: `api/notices.ts` → `hooks/useNotices.ts` → 컴포넌트
+- 목록에는 최신 공지 최대 10개의 제목·날짜만 표시, 제목을 클릭하면 내용이 펼쳐지는 아코디언 (한 번에 하나)
+- **개별 읽음 처리**
+  - 읽은 공지 id 목록을 localStorage에 저장하고, 목록에 없는 공지 수를 헤더 배지로 표시
+  - 공지를 펼치면 그 공지만 읽음 처리, `모두 읽음` 버튼으로 일괄 처리
+  - 안 읽은 공지는 `NEW` 배지 + 굵은 제목으로 구분
+- **SSR 안전:** 서버에서는 localStorage를 읽지 않고(`getServerSnapshot` → 전부 읽음 취급) 공지도 CSR로 조회 → hydration 불일치 없음
+- **다른 탭 동기화:** `storage` 이벤트로 다른 탭에서 읽음 처리한 내용 반영
+- **방어 처리:** 저장값이 배열이 아니거나 숫자가 아닌 항목은 무시, 저장 실패(시크릿 모드 등)해도 화면 상태 유지
+- 로딩·에러(다시 시도)·빈 상태 처리, 장바구니와 같은 `Dialog`(`position="right"`)·`CountBadge` 재사용
+
+> **확장성 확인:** 기존 `books`, `cart` 코드는 수정하지 않고 `features/notices` 폴더 추가 + `Header`에 `noticeSlot` 하나를 열어 연결
+
+### 8. 레이아웃 · 스타일
 
 - **공통 컨테이너:** `container-page` 유틸리티 하나로 정의, 콘텐츠 최대 1400px, 좁은 화면에서는 좌우 여백 16px
 - **Pretendard 폰트:** 가변 폰트 파일 하나를 `next/font/local`로 빌드에 포함, Tailwind `--font-sans`에 연결
@@ -144,7 +160,7 @@ src/
 │  ├─ layout.tsx        # 폰트, Header·Footer, Toaster
 │  └─ page.tsx
 ├─ components/
-│  ├─ layout/           # Header, HeaderNav, Footer
+│  ├─ layout/           # Header, HeaderNav, MyPageButton, Footer
 │  └─ ui/               # Dialog, Pagination, CountBadge
 ├─ features/
 │  ├─ books/
@@ -153,13 +169,19 @@ src/
 │  │  ├─ hooks/         # useBooks
 │  │  ├─ types/
 │  │  └─ utils/         # 가격·할인 계산
-│  └─ cart/
-│     ├─ components/    # CartButton, CartDrawer
-│     ├─ hooks/         # useCart
-│     ├─ store/         # localStorage 기반 장바구니 스토어
+│  ├─ cart/
+│  │  ├─ components/    # CartButton, CartDrawer
+│  │  ├─ hooks/         # useCart
+│  │  ├─ store/         # localStorage 기반 장바구니 스토어
+│  │  └─ types/
+│  └─ notices/
+│     ├─ api/           # Supabase 조회
+│     ├─ components/    # NoticeButton, NoticeDrawer
+│     ├─ hooks/         # useNotices
+│     ├─ store/         # 읽은 공지 id 목록 (localStorage)
 │     └─ types/
 └─ lib/
-   ├─ supabase/         # Supabase 클라이언트 (한 곳에서만 생성), seed.sql
+   ├─ supabase/         # Supabase 클라이언트 (한 곳에서만 생성), bookSeed.sql, noticeSeed.sql
    └─ utils/            # 공통 포맷 함수
 ```
 
@@ -167,7 +189,7 @@ src/
 
 **1. 기능(feature) 단위로 묶기**
 
-- `books`, `cart`처럼 기능별로 폴더 분리
+- `books`, `cart`, `notices`처럼 기능별로 폴더 분리
 - 기능 추가·삭제가 한 폴더 안에서 끝남
 - 새 기능(주문, 챌린지 등)도 같은 형태의 폴더 하나만 추가하면 됨
 
@@ -185,8 +207,8 @@ app  →  features  →  components/ui, lib
 - feature끼리는 서로 import하지 않음
 - 교재 목록과 장바구니는 `app/_components/StoreBookList.tsx`에서 연결
   - `books`는 장바구니 존재를 모르고 `onAddToCart` prop만 받음
-- 공통 `Header`도 장바구니를 모름
-  - `layout.tsx`가 `CartButton`을 slot(`cartSlot`)으로 주입
+- 공통 `Header`도 장바구니·공지를 모름
+  - `layout.tsx`가 `CartButton`, `NoticeButton`을 slot(`cartSlot`, `noticeSlot`)으로 주입
 
 **4. 변경 지점 한 곳으로**
 
@@ -210,9 +232,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 ```
 
 <details>
-<summary><b>Supabase <code>books</code> 테이블 구조</b></summary>
+<summary><b>Supabase 테이블 구조</b></summary>
 
 <br />
+
+**`books`**
 
 | 컬럼            | 타입                   | 설명              |
 | --------------- | ---------------------- | ----------------- |
@@ -224,17 +248,28 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 | `thumbnail_url` | string \| null         | 썸네일 이미지 URL |
 | `created_at`    | string (timestamptz)   | 생성 시각         |
 
-- RLS 활성화 + SELECT만 허용하는 정책 적용
+**`notices`**
+
+| 컬럼         | 타입                 | 설명      |
+| ------------ | -------------------- | --------- |
+| `id`         | number               | 기본 키   |
+| `title`      | string               | 공지 제목 |
+| `content`    | string               | 공지 내용 |
+| `created_at` | string (timestamptz) | 작성 시각 |
+
+- 두 테이블 모두 RLS 활성화 + SELECT만 허용하는 정책 적용
 - 브라우저에 노출되는 publishable key로는 조회만 가능
 
 </details>
 
 <details>
-<summary><b>Supabase 초기 설정 SQL (<code>seed.sql</code>)</b></summary>
+<summary><b>Supabase 초기 설정 SQL</b></summary>
 
 <br />
 
-[`src/lib/supabase/seed.sql`](src/lib/supabase/seed.sql)을 Supabase 대시보드의 **SQL Editor**에서 실행해 테이블, 권한, 더미 데이터를 한 번에 구성
+Supabase 대시보드의 **SQL Editor**에서 아래 두 파일을 실행해 테이블, 권한, 더미 데이터를 구성
+
+**[`bookSeed.sql`](src/lib/supabase/bookSeed.sql): `books` 테이블**
 
 - **테이블:** DB 단에서도 값 검증
   - `type`은 `single` / `pass`만 허용
@@ -246,6 +281,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
   - `pass`: 76,000원, 5% 할인, 세트 썸네일
   - `single`: 40,000원, 할인 없음, 단품 썸네일
 
+**[`noticeSeed.sql`](src/lib/supabase/noticeSeed.sql): `notices` 테이블**
+
+- `books`와 같은 방식(RLS + SELECT 정책 + `grant select`)으로 구성
+- 더미 공지 4개, 오래된 것부터 넣어 최신 공지일수록 id가 큼 (조회 시 id 내림차순)
+
 </details>
 
 <br />
@@ -253,4 +293,5 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 ## 🚧 구현 범위 밖 (임시 처리)
 
 - 주문하기: 비활성 상태 ("준비 중")
-- 헤더의 스토어 외 메뉴, 알림·마이페이지 아이콘: 동작 없음
+- 헤더의 스토어 외 메뉴: 동작 없음
+- 마이페이지: 로그인 미구현, 클릭 시 "준비 중" 안내 토스트
