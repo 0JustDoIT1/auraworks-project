@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // 이미지 기준 % 좌표 (이미지맵 영역)
 type Area = { left: number; top: number; width: number; height: number };
@@ -22,7 +23,10 @@ const AUTO_PLAY_MS = 5000;
 const IMAGE_BOX_CLASS =
   "absolute inset-0 md:inset-[9%] md:mask-x-from-95% md:mask-y-from-85%";
 
-// 임시 캐러셀 데이터: 실제 배너 이미지로 교체
+const NAV_BUTTON_CLASS =
+  "absolute top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 transition-colors cursor-pointer hover:bg-black/60 focus-visible:outline-2 focus-visible:outline-accent";
+
+// 임시 캐러셀 이미지
 const SLIDES: Slide[] = [
   {
     id: 1,
@@ -34,10 +38,10 @@ const SLIDES: Slide[] = [
       area: { left: 5.69, top: 78.57, width: 16.57, height: 9.34 },
     },
   },
-  { id: 2, image: "/images/carousel_1.png", alt: "시즌7 출시" },
-  { id: 3, image: "/images/carousel_1.png", alt: "AI 채점 분석" },
-  { id: 4, image: "/images/carousel_1.png", alt: "히든 챌린지" },
-  { id: 5, image: "/images/carousel_1.png", alt: "세트 할인" },
+  { id: 2, image: "/images/carousel_2.png", alt: "시즌7 출시" },
+  { id: 3, image: "/images/carousel_3.png", alt: "AI 채점 분석" },
+  { id: 4, image: "/images/carousel_4.png", alt: "히든 챌린지" },
+  { id: 5, image: "/images/carousel_5.png", alt: "세트 할인" },
 ];
 
 export default function HeroBanner() {
@@ -46,6 +50,7 @@ export default function HeroBanner() {
       delay: AUTO_PLAY_MS,
       stopOnInteraction: false, // 스와이프 후에도 자동 재생 유지
       stopOnMouseEnter: true, // hover 시 일시정지
+      rootNode: (emblaRoot) => emblaRoot.parentElement, // hover 감지를 section(넘김 버튼 포함)으로 확장
     }),
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0); // 슬라이드 번호 체크용 state
@@ -113,6 +118,24 @@ export default function HeroBanner() {
           })}
         </div>
       </div>
+
+      {/* 양 끝 이전·다음 버튼 */}
+      <button
+        type="button"
+        aria-label="이전 슬라이드"
+        onClick={() => emblaApi?.scrollPrev()}
+        className={`${NAV_BUTTON_CLASS} left-4`}
+      >
+        <ChevronLeft className="size-5 md:size-6" />
+      </button>
+      <button
+        type="button"
+        aria-label="다음 슬라이드"
+        onClick={() => emblaApi?.scrollNext()}
+        className={`${NAV_BUTTON_CLASS} right-4`}
+      >
+        <ChevronRight className="size-5 md:size-6" />
+      </button>
 
       {/* 우측 하단 페이지 표시 */}
       <div className="pointer-events-none absolute inset-x-0 bottom-6">

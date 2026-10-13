@@ -26,16 +26,17 @@
 
 ## 🛠 기술 스택
 
-| 구분 | 사용 |
-|---|---|
+| 구분      | 사용                                              |
+| --------- | ------------------------------------------------- |
 | Framework | Next.js 16 (App Router, React Compiler), React 19 |
-| Language | TypeScript (strict) |
-| Style | Tailwind CSS v4, Pretendard |
-| Data | Supabase (publishable key + RLS로 SELECT만 허용) |
-| UI | lucide-react · embla-carousel · sonner |
-| Deploy | GitHub + Vercel |
+| Language  | TypeScript (strict)                               |
+| Style     | Tailwind CSS v4, Pretendard                       |
+| Data      | Supabase (publishable key + RLS로 SELECT만 허용)  |
+| UI        | lucide-react · embla-carousel · sonner            |
+| Deploy    | GitHub + Vercel                                   |
 
 > **라이브러리 선택 기준**
+>
 > - 직접 만들면 품질 보장이 어려운 영역(캐러셀 터치·드래그, 토스트)에만 사용
 > - 장바구니 상태 관리, 모달 등 브라우저·React 기본 기능으로 충분한 부분은 직접 구현
 
@@ -57,14 +58,15 @@
   - 컬럼이 바뀌어도 컴포넌트는 영향 없음
 - **모든 상태를 화면에 표시**
 
-  | 상태 | 화면 |
-  |---|---|
-  | 첫 로딩 | "불러오는 중…" |
-  | 에러 | 안내 문구 + `다시 시도` 버튼 |
-  | 빈 결과 | 검색·필터 중이면 "조건에 맞는 교재가 없습니다." |
+  | 상태      | 화면                                               |
+  | --------- | -------------------------------------------------- |
+  | 첫 로딩   | "불러오는 중…"                                     |
+  | 에러      | 안내 문구 + `다시 시도` 버튼                       |
+  | 빈 결과   | 검색·필터 중이면 "조건에 맞는 교재가 없습니다."    |
   | 재조회 중 | 이전 목록을 흐리게 유지, 최소 높이로 레이아웃 고정 |
 
 > **고민한 점: 늦게 도착한 응답**
+>
 > - 문제: 입력할 때마다 바로 검색하므로, 이전 요청 응답이 늦게 도착해 최신 결과를 덮어쓸 수 있음
 > - 해결: 요청 조건을 키(`keyword|type|page|…`)로 만들고, 현재 키와 일치하는 응답만 반영
 > - `isLoading`도 별도 state 없이 "현재 키의 응답이 아직 없음"으로 계산
@@ -76,6 +78,7 @@
 - 첫·마지막 페이지에서 이전·다음 버튼 비활성화
 
 > **트러블슈팅: 페이지 이동 후 맨 위로 스크롤되다 멈추는 문제**
+>
 > - 증상: 응답 속도에 따라 스크롤이 될 때도 있고 안 될 때도 있음
 > - 원인: 클릭 즉시 부드러운 스크롤을 시작했는데, 스크롤 도중 새 데이터가 그려지면서 스크롤이 끊김
 > - 해결: 새 페이지가 렌더된 뒤(`isLoading` 종료 시점)에 스크롤하도록 변경
@@ -106,16 +109,18 @@
 - **수량 규칙:** 같은 상품을 다시 담으면 수량 증가, 1~99개로 제한
 - **담기 결과별 안내:** 스토어의 `add`가 결과를 반환하고, 결과에 맞는 토스트 표시
 
-  | 결과 | 토스트 |
-  |---|---|
-  | `added` | "담았습니다" |
+  | 결과        | 토스트              |
+  | ----------- | ------------------- |
+  | `added`     | "담았습니다"        |
   | `increased` | "수량을 늘렸습니다" |
-  | `max` | "최대 수량입니다" |
+  | `max`       | "최대 수량입니다"   |
+
 - **금액 요약:** 상품 금액, 할인 금액, 결제 예정 금액을 수량까지 반영해 계산
 
 ### 6. 히어로 배너
 
 - embla-carousel 사용: 무한 반복, 5초 자동 재생, 마우스를 올리면 일시정지, 스와이프 후에도 자동 재생 유지
+- 양 끝 이전·다음 버튼으로 수동 넘김
 - **이미지맵 링크**
   - 배너가 문구까지 포함된 이미지 한 장이라, 이미지 속 "시리즈 보기" 버튼 위치에만 투명 링크 배치
   - 위치를 이미지 대비 %로 지정 → 화면 크기가 바뀌어도 버튼 위치를 따라감
@@ -161,11 +166,13 @@ src/
 ### 구조 설계 기준
 
 **1. 기능(feature) 단위로 묶기**
+
 - `books`, `cart`처럼 기능별로 폴더 분리
 - 기능 추가·삭제가 한 폴더 안에서 끝남
 - 새 기능(주문, 챌린지 등)도 같은 형태의 폴더 하나만 추가하면 됨
 
 **2. 역할별 하위 폴더**
+
 - feature 루트에 파일을 쌓지 않고 `api / components / hooks / store / types / utils`로 분리
 - 파일 위치만으로 역할 파악 가능
 
@@ -182,6 +189,7 @@ app  →  features  →  components/ui, lib
   - `layout.tsx`가 `CartButton`을 slot(`cartSlot`)으로 주입
 
 **4. 변경 지점 한 곳으로**
+
 - Supabase 클라이언트는 `lib/supabase/client.ts`에서만 생성
 - 장바구니를 서버 저장으로 바꿀 때는 `cartStore`의 저장·불러오기만 교체하면 됨
 
@@ -206,15 +214,15 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 
 <br />
 
-| 컬럼 | 타입 | 설명 |
-|---|---|---|
-| `id` | number | 기본 키 |
-| `title` | string | 교재명 |
-| `type` | `"single"` \| `"pass"` | 단품 / 패스 |
-| `price` | number | 정가 |
-| `sale_percent` | number \| null | 할인율(%) |
-| `thumbnail_url` | string \| null | 썸네일 이미지 URL |
-| `created_at` | string (timestamptz) | 생성 시각 |
+| 컬럼            | 타입                   | 설명              |
+| --------------- | ---------------------- | ----------------- |
+| `id`            | number                 | 기본 키           |
+| `title`         | string                 | 교재명            |
+| `type`          | `"single"` \| `"pass"` | 단품 / 패스       |
+| `price`         | number                 | 정가              |
+| `sale_percent`  | number \| null         | 할인율(%)         |
+| `thumbnail_url` | string \| null         | 썸네일 이미지 URL |
+| `created_at`    | string (timestamptz)   | 생성 시각         |
 
 - RLS 활성화 + SELECT만 허용하는 정책 적용
 - 브라우저에 노출되는 publishable key로는 조회만 가능
@@ -246,4 +254,3 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 
 - 주문하기: 비활성 상태 ("준비 중")
 - 헤더의 스토어 외 메뉴, 알림·마이페이지 아이콘: 동작 없음
-- 히어로 배너 링크는 `#`, 2~5번 슬라이드는 1번 이미지를 임시로 사용
