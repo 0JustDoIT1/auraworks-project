@@ -154,7 +154,7 @@ src/
 │     ├─ store/         # localStorage 기반 장바구니 스토어
 │     └─ types/
 └─ lib/
-   ├─ supabase/         # Supabase 클라이언트 (한 곳에서만 생성)
+   ├─ supabase/         # Supabase 클라이언트 (한 곳에서만 생성), seed.sql
    └─ utils/            # 공통 포맷 함수
 ```
 
@@ -214,9 +214,29 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
 | `price` | number | 정가 |
 | `sale_percent` | number \| null | 할인율(%) |
 | `thumbnail_url` | string \| null | 썸네일 이미지 URL |
+| `created_at` | string (timestamptz) | 생성 시각 |
 
 - RLS 활성화 + SELECT만 허용하는 정책 적용
 - 브라우저에 노출되는 publishable key로는 조회만 가능
+
+</details>
+
+<details>
+<summary><b>Supabase 초기 설정 SQL (<code>seed.sql</code>)</b></summary>
+
+<br />
+
+[`src/lib/supabase/seed.sql`](src/lib/supabase/seed.sql)을 Supabase 대시보드의 **SQL Editor**에서 실행해 테이블, 권한, 더미 데이터를 한 번에 구성
+
+- **테이블:** DB 단에서도 값 검증
+  - `type`은 `single` / `pass`만 허용
+  - `price`는 0 이상
+  - `sale_percent`는 1~99 사이 또는 `null`
+- **RLS:** 활성화 후 `anon`, `authenticated`에 SELECT 정책만 추가 → INSERT·UPDATE·DELETE는 모두 차단
+- **권한:** 새 테이블이 Data API에 자동 노출되지 않도록 설정해 두었기 때문에, 조회 권한(`grant select`)을 직접 부여
+- **더미 데이터:** 30개 생성, 타입은 50% 확률로 랜덤
+  - `pass`: 76,000원, 5% 할인, 세트 썸네일
+  - `single`: 40,000원, 할인 없음, 단품 썸네일
 
 </details>
 
